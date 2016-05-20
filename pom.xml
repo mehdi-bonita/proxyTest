@@ -47,9 +47,16 @@
                             <mainClass>org.bonitasoft.proxy.test.Main</mainClass>
                         </manifest>
                     </archive>
-                    
-                   <finalName>proxy-test</finalName>
+                    <finalName>proxy-test</finalName>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

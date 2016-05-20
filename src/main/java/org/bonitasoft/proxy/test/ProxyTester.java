@@ -45,13 +45,13 @@ public class ProxyTester {
         final String protocol = configuration.getProperty(PROXY_PROTOCOL);
         if (protocol != null) {
             String key = protocol.toLowerCase() + "." + PROXY_HOST;
-            String value = System.getProperty(PROXY_HOST);
+            String value = configuration.getProperty(PROXY_HOST);
             if (value != null) {
-                System.setProperty(key, System.getProperty(PROXY_HOST));
+                System.setProperty(key, value);
                 System.out.println(String.format("Setting environment variable: %s = %s", key, value));
             }
             key = protocol.toLowerCase() + "." + PROXY_PORT;
-            value = System.getProperty(PROXY_PORT);
+            value = configuration.getProperty(PROXY_PORT);
             if (value != null) {
                 System.setProperty(key, value);
                 System.out.println(String.format("Setting environment variable: %s = %s", key, value));
@@ -59,13 +59,13 @@ public class ProxyTester {
 
             if ("true".equals(System.getProperty("isProxyWithAuthent"))) {
                 key = protocol.toLowerCase() + "." + PROXY_USER;
-                value = System.getProperty(PROXY_USER);
+                value = configuration.getProperty(PROXY_USER);
                 if (value != null) {
                     System.setProperty(protocol.toLowerCase() + ".proxyUser", System.getProperty(PROXY_USER));
                     System.out.println(String.format("Setting environment variable: %s = %s", key, value));
                 }
                 key = protocol.toLowerCase() + "." + PROXY_PASSWORD;
-                value = System.getProperty(PROXY_PASSWORD);
+                value = configuration.getProperty(PROXY_PASSWORD);
                 if (value != null) {
                     System.setProperty(protocol.toLowerCase() + ".proxyPassword", System.getProperty(PROXY_PASSWORD));
                     System.out.println(String.format("Setting environment variable: %s = %s", key, value));
