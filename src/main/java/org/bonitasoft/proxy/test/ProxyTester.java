@@ -11,12 +11,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
 
-
 public class ProxyTester {
 
     private static final String URL = "postUrl";
     private static final String USER_AGENT = "Mozilla/5.0";
-    private static final String PROXY_PROTOCOL = null;
+    private static final String PROXY_PROTOCOL = "proxyProtocol";
     private static final String HTTP = "http";
     private static final String HTTPS = "https";
     private static final String PROXY_HOST = "proxyHost";
@@ -24,10 +23,10 @@ public class ProxyTester {
     private static final String PROXY_USER = "proxyUser";
     private static final String PROXY_PASSWORD = "proxyPassword";
 
-    public void start(String propertiesPath) throws IOException {
+    public String start(String propertiesPath) throws IOException {
         final Properties configuration = loadConfiguration(propertiesPath);
-
-        sendPost(configuration);
+        applyConfiguration(configuration);
+        return sendPost(configuration);
     }
 
     protected Properties loadConfiguration(final String propertiesPath) throws IOException {
@@ -43,33 +42,40 @@ public class ProxyTester {
     }
 
     protected void applyConfiguration(Properties configuration) throws IOException {
-        final String protocol = System.getProperty(PROXY_PROTOCOL);
+        final String protocol = configuration.getProperty(PROXY_PROTOCOL);
+        if (protocol != null) {
+            String key = protocol.toLowerCase() + "." + PROXY_HOST;
+            String value = System.getProperty(PROXY_HOST);
+            if (value != null) {
+                System.setProperty(key, System.getProperty(PROXY_HOST));
+                System.out.println(String.format("Setting environment variable: %s = %s", key, value));
+            }
+            key = protocol.toLowerCase() + "." + PROXY_PORT;
+            value = System.getProperty(PROXY_PORT);
+            if (value != null) {
+                System.setProperty(key, value);
+                System.out.println(String.format("Setting environment variable: %s = %s", key, value));
+            }
 
-        String key = protocol.toLowerCase() + "." + PROXY_HOST;
-        String value = System.getProperty(PROXY_HOST);
-        System.setProperty(key, System.getProperty(PROXY_HOST));
-        System.out.println(String.format("Setting environment variable: %s = %s", key, value));
-
-        key = protocol.toLowerCase() + "." + PROXY_PORT;
-        value = System.getProperty(PROXY_PORT);
-        System.setProperty(key, value);
-        System.out.println(String.format("Setting environment variable: %s = %s", key, value));
-
-        if ("true".equals(System.getProperty("isProxyWithAuthent"))) {
-            key = protocol.toLowerCase() + "." + PROXY_USER;
-            value = System.getProperty(PROXY_USER);
-            System.setProperty(protocol.toLowerCase() + ".proxyUser", System.getProperty(PROXY_USER));
-            System.out.println(String.format("Setting environment variable: %s = %s", key, value));
-
-            key = protocol.toLowerCase() + "." + PROXY_PASSWORD;
-            value = System.getProperty(PROXY_PASSWORD);
-            System.setProperty(protocol.toLowerCase() + ".proxyPassword", System.getProperty(PROXY_PASSWORD));
-            System.out.println(String.format("Setting environment variable: %s = %s", key, value));
+            if ("true".equals(System.getProperty("isProxyWithAuthent"))) {
+                key = protocol.toLowerCase() + "." + PROXY_USER;
+                value = System.getProperty(PROXY_USER);
+                if (value != null) {
+                    System.setProperty(protocol.toLowerCase() + ".proxyUser", System.getProperty(PROXY_USER));
+                    System.out.println(String.format("Setting environment variable: %s = %s", key, value));
+                }
+                key = protocol.toLowerCase() + "." + PROXY_PASSWORD;
+                value = System.getProperty(PROXY_PASSWORD);
+                if (value != null) {
+                    System.setProperty(protocol.toLowerCase() + ".proxyPassword", System.getProperty(PROXY_PASSWORD));
+                    System.out.println(String.format("Setting environment variable: %s = %s", key, value));
+                }
+            }
         }
     }
 
     // HTTP POST request
-    private void sendPost(Properties configuration) throws IOException {
+    private String sendPost(Properties configuration) throws IOException {
         final String url = configuration.getProperty(URL);
         final URL obj = new URL(url);
         final HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -105,6 +111,7 @@ public class ProxyTester {
 
         //print result
         System.out.println(response.toString());
+        return response.toString();
 
     }
 

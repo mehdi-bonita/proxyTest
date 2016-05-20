@@ -17,4 +17,13 @@ public class ProxyTesterTest {
         assertThat(configuration).containsEntry("proxyProtocol", "http");
     }
 
+    @Test
+    public void should_send_a_post_request() throws Exception {
+        final ProxyTester proxyTester = new ProxyTester();
+
+        final String response = proxyTester.start(ProxyTesterTest.class.getResource("/config.properties").getFile());
+
+        assertThat(response).isNotEmpty();
+    }
+
 }
